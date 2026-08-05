@@ -17,7 +17,7 @@ Runs on Modal — serverless, billed per second, auto-teardown.
 ## Setup (local)
 ```
 pip install modal && modal setup
-modal secret create huggingface HF_TOKEN=...     # your Hugging Face token
+modal secret create huggingface-secret HF_TOKEN=...   # your Hugging Face token
 ```
 Training logs stream to your terminal via Modal. (Qwen2.5 is ungated, so the HF token is
 optional — it avoids download rate limits — but `modal_app.py` currently expects the secret.)
