@@ -1,8 +1,0 @@
-{
-  "name": "lora",
-  "base": false,
-  "n": 1000,
-  "none": 0,
-  "accuracy": 0.617,
-  "weighted_f1": 0.6168
-}

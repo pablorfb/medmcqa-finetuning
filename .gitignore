@@ -12,6 +12,10 @@ venv/
 # Trained model weights — reproducible from the training scripts, excluded to keep the repo light
 *.safetensors
 
+# Run outputs and tests — excluded from the submission
+runs/
+tests/
+
 # Internal planning notes (not part of the submission)
 PLAN.md
 
