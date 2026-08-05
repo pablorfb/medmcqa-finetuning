@@ -59,7 +59,7 @@ modal run --detach modal_app.py::train_lora      # LoRA, 1× A100-80GB
 modal run --detach modal_app.py::train_qlora     # QLoRA, 1× A100-80GB
 
 # Evaluate (writes accuracy + weighted F1 to eval.json per run):
-modal run modal_app.py::evaluate --model Qwen/Qwen2.5-14B --out /vol/runs/base --base
+modal run modal_app.py::evaluate --model Qwen/Qwen2.5-14B --out /vol/runs/base
 modal run modal_app.py::evaluate --model /vol/runs/lora --out /vol/runs/lora
 modal volume get qwen-medmcqa-ft /runs ./runs   # pull results (eval.json / metrics.json) locally
 ```

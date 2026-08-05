@@ -3,7 +3,7 @@
     modal run --detach modal_app.py::train_full    # full FT, 4x A100-80GB ZeRO-3
     modal run --detach modal_app.py::train_lora    # LoRA, 1x A100-80GB
     modal run --detach modal_app.py::train_qlora   # QLoRA, 1x A100-80GB
-    modal run modal_app.py::evaluate --model <ckpt-dir|hf-id> --out <dir> [--n N] [--base]
+    modal run modal_app.py::evaluate --model <ckpt-dir|hf-id> --out <dir> [--n N]
 """
 import subprocess
 from pathlib import Path
@@ -39,34 +39,29 @@ def _train(config: str, nproc: int):
     vol.commit()
 
 
-# One function per method so each gets the GPU count it needs.
-# Pin the 80GB A100 explicitly: bare "A100" non-deterministically yields 40GB *or* 80GB cards, and
-# a 14B full fine-tune needs 80GB/GPU (40GB OOMs). Same card for all three keeps tokens/s comparable.
 @app.function(gpu="A100-80GB:4", volumes=VOLUMES, secrets=SECRETS, timeout=4 * 60 * 60)
 def train_full():
-    """full FT — 4x A100-80GB + ZeRO-3 (only way a 14B full fine-tune fits)."""
+    """full FT — 4x A100-80GB ."""
     _train("full", nproc=4)
 
 
 @app.function(gpu="A100-80GB", volumes=VOLUMES, secrets=SECRETS, timeout=4 * 60 * 60)
 def train_lora():
-    """LoRA — single A100-80GB, no sharding (frozen bf16 base fits)."""
+    """LoRA — single A100-80GB."""
     _train("lora", nproc=1)
 
 
 @app.function(gpu="A100-80GB", volumes=VOLUMES, secrets=SECRETS, timeout=4 * 60 * 60)
 def train_qlora():
-    """QLoRA — single A100-80GB, no sharding (4-bit base ~8GB; peak VRAM shows it'd fit far smaller)."""
+    """QLoRA — single A100-80GB."""
     _train("qlora", nproc=1)
 
 
 @app.function(gpu="A100", volumes=VOLUMES, secrets=SECRETS, timeout=60 * 60)
-def evaluate(model: str, out: str, n: int = 0, base: bool = False):
+def evaluate(model: str, out: str, n: int = 0):
     cmd = ["python", "eval_medmcqa.py", "--model", model, "--out", out]
     if n:
         cmd += ["--n", str(n)]
-    if base:
-        cmd.append("--base")
     subprocess.run(cmd, cwd="/root/app", check=True)
     vol.commit()
 

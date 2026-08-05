@@ -1,8 +1,7 @@
 """Evaluate a model on MedMCQA (dev split): accuracy + weighted F1. Single GPU.
 
-  python eval_medmcqa.py --model <checkpoint-dir | hf-id> --out runs/<name> [--n 0] [--base]
+  python eval_medmcqa.py --model <checkpoint-dir | hf-id> --out runs/<name> [--n 0]
 
-Heavy deps are imported lazily so `parse_letter` stays unit-testable offline.
 """
 import argparse
 import json
@@ -40,7 +39,7 @@ def _load(model_path):
     return model, tok
 
 
-def evaluate(model_path, out_dir, n=0, base=False, batch_size=16):
+def evaluate(model_path, out_dir, n=0, batch_size=16):
     import torch
     from sklearn.metrics import accuracy_score, f1_score
 
@@ -60,10 +59,9 @@ def evaluate(model_path, out_dir, n=0, base=False, batch_size=16):
         preds += [parse_letter(g) for g in gen]
         golds += [data.gold_letter(r) for r in batch]
 
-    filled = [p or "?" for p in preds]  # unparseable -> guaranteed wrong
+    filled = [p or "?" for p in preds]  # unparseable
     record = {
         "name": Path(out_dir).name,
-        "base": base,
         "n": len(golds),
         "none": sum(p is None for p in preds),
         "accuracy": round(accuracy_score(golds, filled), 4),
@@ -79,9 +77,8 @@ def main():
     ap.add_argument("--model", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--n", type=int, default=0, help="eval subset size; 0 = full dev split")
-    ap.add_argument("--base", action="store_true", help="label as the zero-shot baseline")
     args = ap.parse_args()
-    evaluate(args.model, args.out, args.n, args.base)
+    evaluate(args.model, args.out, args.n)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,4 @@
 """MedMCQA loading and SFT formatting: question+options -> prompt, answer letter -> target.
-
-Import-light on purpose (datasets is imported lazily) so the formatting/masking logic is
-unit-testable with no ML dependencies installed.
 """
 
 DATASET = "openlifescienceai/medmcqa"
@@ -30,7 +27,7 @@ def _tokenize(row, tok, max_len):
     answer_ids = tok(f"\nAnswer: {gold_letter(row)}" + tok.eos_token, add_special_tokens=False)["input_ids"]
     exp = (row.get("exp") or "").strip()
     reason_ids = tok(" " + exp, add_special_tokens=False)["input_ids"] if exp else []
-    # Keep prompt + answer intact; trim only the reasoning so the final letter always survives.
+    # Keep prompt + answer as is; trim only the reasoning so the final letter always survives.
     budget = max_len - len(prompt_ids) - len(answer_ids)
     completion = reason_ids[: max(budget, 0)] + answer_ids
     ids = (prompt_ids + completion)[:max_len]

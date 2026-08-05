@@ -9,7 +9,7 @@ from transformers import Trainer, TrainerCallback
 
 
 def _numel(p):
-    # Under DeepSpeed ZeRO-3 params are partitioned and p.numel() is 0; ds_numel holds the real size.
+    # Under DeepSpeed ZeRO-3 params are partitioned, ds_numel holds the size.
     return getattr(p, "ds_numel", None) or p.numel()
 
 
@@ -32,7 +32,7 @@ def _reduce(value, op):
 
 
 class Benchmark:
-    """Shared token counter — the trainer increments it, the callback reads it."""
+    """Shared token counter."""
 
     def __init__(self):
         self.tokens = 0
@@ -59,7 +59,7 @@ class BenchmarkCallback(TrainerCallback):
         self.t_start = time.perf_counter()
 
     def on_step_end(self, args, state, control, **kwargs):
-        if state.global_step == self.warmup:  # begin the steady-state measurement window
+        if state.global_step == self.warmup:  # begin warmup
             torch.cuda.synchronize()
             torch.cuda.reset_peak_memory_stats()
             self.window_start = (time.perf_counter(), self.bench.tokens)
@@ -90,4 +90,4 @@ class BenchmarkCallback(TrainerCallback):
         Path(self.out_dir).mkdir(parents=True, exist_ok=True)
         payload = json.dumps(record, indent=2)
         Path(self.out_dir, "metrics.json").write_text(payload)
-        print("METRICS " + payload, flush=True)  # surface in Modal App Logs, not just the volume file
+        print("METRICS " + payload, flush=True)  

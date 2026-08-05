@@ -32,7 +32,7 @@ Run methods **one at a time** — concurrent writers to the same Modal volume ca
 ## Eval + results
 ```
 # Zero-shot baseline, then each trained run:
-modal run modal_app.py::evaluate --model Qwen/Qwen2.5-14B --out /vol/runs/base --base
+modal run modal_app.py::evaluate --model Qwen/Qwen2.5-14B --out /vol/runs/base
 modal run modal_app.py::evaluate --model /vol/runs/lora --out /vol/runs/lora
 # Pull results locally:
 modal volume get qwen-medmcqa-ft /runs ./runs
