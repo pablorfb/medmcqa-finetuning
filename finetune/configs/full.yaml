@@ -1,0 +1,11 @@
+name: full
+method: full
+model_id: Qwen/Qwen2.5-14B
+train_size: 10000
+epochs: 3
+max_len: 512
+per_device_batch: 2    # global batch = 2 x grad_accum 8 x 4 GPUs = 64; batch 2 relieves ZeRO-3 memory pressure
+grad_accum: 8
+lr: 1.0e-5
+seed: 42
+deepspeed: configs/zero3.json

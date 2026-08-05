@@ -1,0 +1,8 @@
+{
+  "name": "qlora",
+  "base": false,
+  "n": 1000,
+  "none": 0,
+  "accuracy": 0.583,
+  "weighted_f1": 0.5828
+}

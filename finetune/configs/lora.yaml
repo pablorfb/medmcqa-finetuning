@@ -1,0 +1,12 @@
+name: lora
+method: lora
+model_id: Qwen/Qwen2.5-14B
+train_size: 10000
+epochs: 3
+max_len: 512
+per_device_batch: 8    # global batch = 8 x grad_accum 8 x 1 GPU = 64
+grad_accum: 8
+lr: 2.0e-4
+seed: 42
+deepspeed: null        # single GPU: frozen bf16 base fits one A100, nothing to shard
+lora: { r: 16, alpha: 32, dropout: 0.05, target_modules: [q_proj, k_proj, v_proj, o_proj] }

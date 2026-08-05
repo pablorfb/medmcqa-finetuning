@@ -1,0 +1,12 @@
+name: qlora
+method: qlora
+model_id: Qwen/Qwen2.5-14B
+train_size: 10000
+epochs: 3
+max_len: 512
+per_device_batch: 8    # global batch = 8 x grad_accum 8 x 1 GPU = 64
+grad_accum: 8
+lr: 2.0e-4
+seed: 42
+deepspeed: null        # single GPU: 4-bit base ~8GB fits easily; sidesteps fragile bnb+ZeRO-3
+lora: { r: 16, alpha: 32, dropout: 0.05, target_modules: [q_proj, k_proj, v_proj, o_proj] }

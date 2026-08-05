@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+
+# Pytest
+.pytest_cache/
+
+# Trained model weights — reproducible from the training scripts, excluded to keep the repo light
+*.safetensors
+
+# Internal planning notes (not part of the submission)
+PLAN.md
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
