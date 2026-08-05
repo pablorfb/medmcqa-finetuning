@@ -12,7 +12,6 @@ Runs on Modal — serverless, billed per second, auto-teardown.
 - `configs/` — `zero3.json` (+ `zero2.json`) and `full|lora|qlora.yaml`
 - `modal_app.py` — Modal launcher (train / evaluate functions)
 - `eval_medmcqa.py` — accuracy + weighted F1 on the dev split (single GPU)
-- `aggregate.py` — `runs/*/*.json` → `results.csv` + money plot
 
 ## Setup (local)
 ```
@@ -35,10 +34,11 @@ Run methods **one at a time** — concurrent writers to the same Modal volume ca
 # Zero-shot baseline, then each trained run:
 modal run modal_app.py::evaluate --model Qwen/Qwen2.5-14B --out /vol/runs/base --base
 modal run modal_app.py::evaluate --model /vol/runs/lora --out /vol/runs/lora
-# Pull results locally and build the table + money plot:
+# Pull results locally:
 modal volume get qwen-medmcqa-ft /runs ./runs
-python aggregate.py --runs runs --rate 8
 ```
+Each run's results land in `runs/<method>/`: `eval.json` (accuracy, weighted F1) and
+`metrics.json` (trainable params, tokens/s, peak VRAM, runtime).
 
 ## Notes
 - Unit tests live in `tests/` (gitignored, local-only): `python -m pytest tests/`.

@@ -40,7 +40,6 @@ finetune/
   data.py            # MedMCQA load + chain-of-thought prompt/target formatting
   eval_medmcqa.py    # accuracy + weighted F1 on the validation split
   bench.py           # instrumentation: trainable params, tokens/s, peak VRAM
-  aggregate.py       # runs/*/*.json -> results.csv + money plot
   modal_app.py       # Modal launcher (train / evaluate functions)
   configs/           # full|lora|qlora.yaml + ZeRO-2/3 DeepSpeed configs
   requirements.txt   # pinned deps for a reproducible Modal image
@@ -59,11 +58,14 @@ modal run --detach modal_app.py::train_full     # full FT, 4× A100-80GB ZeRO-3
 modal run --detach modal_app.py::train_lora      # LoRA, 1× A100-80GB
 modal run --detach modal_app.py::train_qlora     # QLoRA, 1× A100-80GB
 
-# Evaluate + aggregate into results.csv and the money plot:
+# Evaluate (writes accuracy + weighted F1 to eval.json per run):
 modal run modal_app.py::evaluate --model Qwen/Qwen2.5-14B --out /vol/runs/base --base
-modal volume get qwen-medmcqa-ft /runs ./runs
-python aggregate.py --runs runs --rate 8
+modal run modal_app.py::evaluate --model /vol/runs/lora --out /vol/runs/lora
+modal volume get qwen-medmcqa-ft /runs ./runs   # pull results (eval.json / metrics.json) locally
 ```
+
+Each run's results land in `runs/<method>/`: `eval.json` (accuracy, weighted F1) and
+`metrics.json` (trainable params, tokens/s, peak VRAM, runtime).
 
 ## Method summary
 
